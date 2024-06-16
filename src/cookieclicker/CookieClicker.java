@@ -1,5 +1,6 @@
 package cookieclicker;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -7,6 +8,8 @@ public class CookieClicker {
 
     private static CookieManager cookieManager;
     private static ArrayList<Upgrade> upgrades;
+    private JPanel panel1;
+    private JLabel cookieLabel;
 
     public static void main(String[] args) {
         upgrades = createUpgrades(); // Las upgrades van afuera de CookieManager puesto que no queremos crear 8000 instancias de cada una.
@@ -140,4 +143,7 @@ public class CookieClicker {
         cookieManager.sellUpgrade(upgrade);
     }
 
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+    }
 }
