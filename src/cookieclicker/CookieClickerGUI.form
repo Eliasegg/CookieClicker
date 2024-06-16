@@ -32,14 +32,14 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="bg" pref="1108" max="32767" attributes="0"/>
+              <Component id="bg" max="32767" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="bg" alignment="0" pref="660" max="32767" attributes="0"/>
+          <Component id="bg" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -71,7 +71,7 @@
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-              <AbsoluteConstraints x="80" y="50" width="250" height="100"/>
+              <AbsoluteConstraints x="90" y="50" width="250" height="100"/>
             </Constraint>
           </Constraints>
         </Component>
@@ -101,7 +101,7 @@
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-              <AbsoluteConstraints x="90" y="170" width="210" height="40"/>
+              <AbsoluteConstraints x="100" y="170" width="210" height="40"/>
             </Constraint>
           </Constraints>
         </Component>
@@ -115,10 +115,22 @@
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-              <AbsoluteConstraints x="90" y="130" width="210" height="40"/>
+              <AbsoluteConstraints x="100" y="130" width="210" height="40"/>
             </Constraint>
           </Constraints>
         </Component>
+        <Container class="javax.swing.JScrollPane" name="upgradesScrollPane">
+          <Properties>
+            <Property name="verticalScrollBarPolicy" type="int" value="22"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
+              <AbsoluteConstraints x="410" y="-10" width="770" height="710"/>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+        </Container>
       </SubComponents>
     </Container>
   </SubComponents>
