@@ -1,12 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package cookieclicker;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  *
- * @author elias
+ * @author Elias
  */
 public class CookieClickerGUI extends javax.swing.JFrame {
 
@@ -15,6 +14,14 @@ public class CookieClickerGUI extends javax.swing.JFrame {
      */
     public CookieClickerGUI() {
         initComponents();
+        scaleCookie();
+    }
+    
+    public void scaleCookie() {
+        ImageIcon cookieIcon = new ImageIcon("src/cookieclicker/images/PerfectCookie.png");
+        Image image = cookieIcon.getImage();
+        Image newImage = image.getScaledInstance(cookieButton.getWidth(), cookieButton.getHeight(), Image.SCALE_SMOOTH);
+        cookieButton.setIcon(new ImageIcon(newImage));
     }
 
     /**
@@ -26,20 +33,57 @@ public class CookieClickerGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        bg = new javax.swing.JPanel();
+        cookieButton = new javax.swing.JLabel();
+        cookieLabel = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        cookieCountText = new javax.swing.JLabel();
+        cookieCount = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1200, 700));
+        setResizable(false);
+        setSize(new java.awt.Dimension(1200, 700));
+
+        bg.setBackground(new java.awt.Color(255, 255, 255));
+        bg.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        bg.add(cookieButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 260, 340, 340));
+
+        cookieLabel.setFont(new java.awt.Font("Samurai Blast", 0, 48)); // NOI18N
+        cookieLabel.setText("GALLETAS");
+        bg.add(cookieLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 50, 250, 100));
+
+        jSeparator1.setBackground(new java.awt.Color(0, 0, 0));
+        jSeparator1.setForeground(new java.awt.Color(0, 0, 0));
+        jSeparator1.setAlignmentX(1.0F);
+        bg.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 340, 20));
+
+        cookieCountText.setFont(new java.awt.Font("Dubai", 1, 28)); // NOI18N
+        cookieCountText.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        cookieCountText.setText("MIL");
+        bg.add(cookieCountText, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 170, 210, 40));
+
+        cookieCount.setFont(new java.awt.Font("Dubai", 1, 48)); // NOI18N
+        cookieCount.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        cookieCount.setText("0");
+        bg.add(cookieCount, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 130, 210, 40));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, 1108, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, 660, Short.MAX_VALUE)
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -78,5 +122,11 @@ public class CookieClickerGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel bg;
+    private javax.swing.JLabel cookieButton;
+    private javax.swing.JLabel cookieCount;
+    private javax.swing.JLabel cookieCountText;
+    private javax.swing.JLabel cookieLabel;
+    private javax.swing.JSeparator jSeparator1;
     // End of variables declaration//GEN-END:variables
 }
