@@ -26,13 +26,43 @@ public class CookieClickerGUI extends javax.swing.JFrame {
     }
 
     private void setupCookie() {
+        bg.setLayout(null);
         resizeAndSetImage(cookieButton, "src/cookieclicker/images/PerfectCookie.png", 330, 330);
 
         cookieButton.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 CookieClicker.getCookieManager().clickCookie();
                 cookieCount.setText(CookieClicker.getCookieManager().getCookies() + "");
+
+                JLabel clickLabel = new JLabel("+1");
+                clickLabel.setFont(new Font("Arial", Font.BOLD, 24));
+                clickLabel.setForeground(Color.WHITE);
+                Point clickLocation = SwingUtilities.convertPoint(cookieButton, e.getPoint(), bg);
+                clickLabel.setBounds(clickLocation.x, clickLocation.y, 50, 30);
+                clickLabel.setFocusable(false);
+                clickLabel.setEnabled(false);
+                clickLabel.setIgnoreRepaint(true);
+                bg.add(clickLabel, 0);
+                bg.revalidate();
+                bg.repaint();
+
+                new Timer(50, new ActionListener() {
+                    int opacity = 255;
+
+                    @Override
+                    public void actionPerformed(ActionEvent evt) {
+                        opacity -= 5;
+                        clickLabel.setForeground(new Color(255, 255, 255, opacity));
+
+                        if (opacity <= 0) {
+                            ((Timer) evt.getSource()).stop();
+                            bg.remove(clickLabel);
+                            bg.revalidate();
+                            bg.repaint();
+                        }
+                    }
+                }).start();
             }
 
             @Override
@@ -48,6 +78,8 @@ public class CookieClickerGUI extends javax.swing.JFrame {
             }
         });
     }
+
+
     private void refreshCookieCount() {
         Timer SimpleTimer = new Timer(1000, new ActionListener(){
             @Override
@@ -131,8 +163,13 @@ public class CookieClickerGUI extends javax.swing.JFrame {
 
             upgradePanel.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseClicked(MouseEvent e) {
-                    System.out.println("Comprando " + upgrade.getName());
+                public void mousePressed(MouseEvent e) {
+                    boolean bought = CookieClicker.getCookieManager().buyUpgrade(upgrade);
+                    if (bought) {
+                        upgradeCount.setText(upgrade.getQuantity() + "");
+                        upgradeCost.setText(upgrade.getCurrentCost() + "");
+                        perSecondText.setText(CookieClicker.getCookieManager().getCookiesPerSecond() + "");
+                    }
                 }
             });
 
