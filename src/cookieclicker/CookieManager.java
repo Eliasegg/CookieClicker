@@ -2,8 +2,8 @@ package cookieclicker;
 
 public class CookieManager {
 
-    private int cookies;
-    private int cookiesPerSecond;
+    private long cookies;
+    private long cookiesPerSecond;
 
     public CookieManager() {
         this.cookies = 0;
@@ -38,15 +38,37 @@ public class CookieManager {
         this.cookies += cookies;
     }
 
-    public int getCookies() {
+    public long getCookies() {
         return cookies;
+    }
+
+    public long getCookiesPrefix() {
+        return cookies < 1000 ? cookies : cookies / 1000;
+    }
+
+    public String getCookiesSuffix() {
+        if (cookies < 1000) {
+            return "";
+        } else if (cookies < 1000000) {
+            return "K";
+        } else if (cookies < 1000000000) {
+            return "M";
+        } else if (cookies < 1000000000000L) {
+            return "B";
+        } else if (cookies < 1000000000000000L) {
+            return "T";
+        } else if (cookies < 1000000000000000000L) {
+            return "Q";
+        } else {
+            return "!";
+        }
     }
 
     public void setCookies(int cookies) {
         this.cookies = cookies;
     }
 
-    public int getCookiesPerSecond() {
+    public long getCookiesPerSecond() {
         return cookiesPerSecond;
     }
 }

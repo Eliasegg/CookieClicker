@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
 /**
@@ -11,6 +12,8 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
  * @author Elias
  */
 public class CookieClickerGUI extends javax.swing.JFrame {
+
+    private List<JLabel> clickLabels = new ArrayList<>();
 
     /**
      * Creates new form CookieClickerGUI
@@ -34,16 +37,24 @@ public class CookieClickerGUI extends javax.swing.JFrame {
             @Override
             public void mousePressed(MouseEvent e) {
                 CookieClicker.getCookieManager().clickCookie();
-                cookieCount.setText(CookieClicker.getCookieManager().getCookies() + "");
+                cookieCount.setText(CookieClicker.getCookieManager().getCookiesPrefix() + "");
+                cookieCountText.setText(CookieClicker.getCookieManager().getCookiesSuffix());
 
                 JLabel clickLabel = new JLabel("+1");
                 clickLabel.setFont(new Font("Arial", Font.BOLD, 24));
-                clickLabel.setForeground(Color.WHITE);
+                clickLabel.setBackground(Color.WHITE);
                 Point clickLocation = SwingUtilities.convertPoint(cookieButton, e.getPoint(), bg);
                 clickLabel.setBounds(clickLocation.x, clickLocation.y, 50, 30);
                 clickLabel.setFocusable(false);
                 clickLabel.setEnabled(false);
                 clickLabel.setIgnoreRepaint(true);
+
+                if (clickLabels.size() >= 5) {
+                    JLabel oldestLabel = clickLabels.remove(0);
+                    bg.remove(oldestLabel);
+                }
+
+                clickLabels.add(clickLabel);
                 bg.add(clickLabel, 0);
                 bg.revalidate();
                 bg.repaint();
@@ -58,6 +69,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
 
                         if (opacity <= 0) {
                             ((Timer) evt.getSource()).stop();
+                            clickLabels.remove(clickLabel);
                             bg.remove(clickLabel);
                             bg.revalidate();
                             bg.repaint();
@@ -80,12 +92,15 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         });
     }
 
-
     private void refreshCookieCount() {
         Timer SimpleTimer = new Timer(1000, new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                cookieCount.setText(CookieClicker.getCookieManager().getCookies() + "");
+                int cookiesPerSecond = (int) CookieClicker.getCookieManager().getCookiesPerSecond();
+                CookieClicker.getCookieManager().addCookies(cookiesPerSecond);
+
+                cookieCount.setText(CookieClicker.getCookieManager().getCookiesPrefix() + "");
+                cookieCountText.setText(CookieClicker.getCookieManager().getCookiesSuffix());
                 perSecondText.setText(CookieClicker.getCookieManager().getCookiesPerSecond() + "");
             }
         });
@@ -93,7 +108,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
     }
 
     private void updateUpgradesAvailability() {
-        Timer SimpleTimer = new Timer(100, new ActionListener(){
+        Timer SimpleTimer = new Timer(1, new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (upgradesScrollPane.getViewport().getView() instanceof Container) {
@@ -112,13 +127,13 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                             if (CookieClicker.getCookieManager().getCookies() >= upgrade.getCurrentCost()) {
                                 upgradePanel.setBackground(new Color(184,216,190));
                                 upgradePanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                                
+
                                 textPanel.setBackground(new Color(184,216,190));
                                 textPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
                             } else {
                                 upgradePanel.setBackground(new Color(176,176,176));
                                 upgradePanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                                
+
                                 textPanel.setBackground(new Color(176,176,176));
                                 textPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                             }
@@ -209,8 +224,11 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                 @Override
                 public void mousePressed(MouseEvent e) {
                     boolean bought = CookieClicker.getCookieManager().buyUpgrade(upgrade);
+                    textPanel.setBackground(bought ? new Color(184,216,190) : new Color(176,176,176));
+                    
                     if (bought) {
-                        cookieCount.setText(CookieClicker.getCookieManager().getCookies() + "");
+                        cookieCount.setText(CookieClicker.getCookieManager().getCookiesPrefix() + "");
+                        cookieCountText.setText(CookieClicker.getCookieManager().getCookiesSuffix());
                         upgradeCount.setText(upgrade.getQuantity() + "");
                         upgradeCost.setText(upgrade.getCurrentCost() + "");
                         perSecondText.setText(CookieClicker.getCookieManager().getCookiesPerSecond() + "");
@@ -308,7 +326,6 @@ public class CookieClickerGUI extends javax.swing.JFrame {
 
         cookieCountText.setFont(new java.awt.Font("Dubai", 1, 28)); // NOI18N
         cookieCountText.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        cookieCountText.setText("MIL");
         bg.add(cookieCountText, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 130, 210, 40));
 
         cookieCount.setFont(new java.awt.Font("Dubai", 1, 48)); // NOI18N
@@ -351,7 +368,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

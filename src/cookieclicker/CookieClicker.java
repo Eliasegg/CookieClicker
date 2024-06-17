@@ -12,16 +12,6 @@ public class CookieClicker {
     public static void startGame() {
         upgrades = createUpgrades();
         cookieManager = new CookieManager();
-
-        Runnable gameTask = new Runnable() {
-            @Override
-            public void run() {
-                startGame(cookieManager);
-            }
-        };
-
-        Thread gameThread = new Thread(gameTask);
-        gameThread.start();
     }
 
     // TODO: balancear los precios de las mejoras y los cookies por segundo. Hacerlo más elegante también, quizá con un ciclo for y alguna formula.
@@ -49,22 +39,6 @@ public class CookieClicker {
         upgrades.add(new Upgrade("Cheated Cookies", 1000000, 1200));
 
         return upgrades;
-    }
-
-    // TODO: Preguntarle al licenciado si se puede usar Thread
-    private static void startGame(CookieManager cookieManager) {
-        boolean running = true;
-        while (running) {
-            int cookiesPerSecond = (int) cookieManager.getCookiesPerSecond();
-            cookieManager.addCookies(cookiesPerSecond);
-            try {
-                Thread.sleep(1000); // 1 segundo.
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                System.out.println("Se interrumpio el juego.");
-                running = false;
-            }
-        }
     }
 
     public static CookieManager getCookieManager() {
