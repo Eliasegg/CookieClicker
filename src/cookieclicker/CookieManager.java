@@ -1,5 +1,7 @@
 package cookieclicker;
 
+import java.text.DecimalFormat;
+
 public class CookieManager {
 
     private long cookies;
@@ -10,9 +12,11 @@ public class CookieManager {
         this.cookiesPerSecond = 1; // Empezamos con 1 cookie por segundo.
     }
 
-    // TODO: Hacer que los clicks aumenten este número como mejora adicional.
-    public void clickCookie() {
-        cookies += 1;
+    public int clickCookie() {
+        Upgrade clickUpgrade = CookieClicker.getUpgrades().get(0);
+        int value = 1 + (clickUpgrade.getQuantity() * ((int)cookiesPerSecond / 10));
+        cookies += value;
+        return value;
     }
 
     public boolean buyUpgrade(Upgrade upgrade) {
@@ -25,13 +29,14 @@ public class CookieManager {
         return false;
     }
 
-    public void sellUpgrade(Upgrade upgrade) {
+    public boolean sellUpgrade(Upgrade upgrade) {
         if (upgrade.getQuantity() > 0) {
             this.cookies += upgrade.getCurrentCost() / 2;
             upgrade.sell();
             cookiesPerSecond -= upgrade.getCookiesPerSecond();
-            System.out.println("Vendiste: " + upgrade.getName() + "!");
+            return true;
         }
+        return false;
     }
 
     public void addCookies(int cookies) {
@@ -42,8 +47,23 @@ public class CookieManager {
         return cookies;
     }
 
-    public long getCookiesPrefix() {
-        return cookies < 1000 ? cookies : cookies / 1000;
+    public String getCookiesPrefix() {
+        DecimalFormat df = new DecimalFormat("#.##");
+        if (cookies < 1000) {
+            return String.valueOf(cookies);
+        } else if (cookies < 1000000) {
+            return df.format(cookies / 1000.0);
+        } else if (cookies < 1000000000) {
+            return df.format(cookies / 1000000.0);
+        } else if (cookies < 1000000000000L) {
+            return df.format(cookies / 1000000000.0);
+        } else if (cookies < 1000000000000000L) {
+            return df.format(cookies / 1000000000000.0);
+        } else if (cookies < 1000000000000000000L) {
+            return df.format(cookies / 1000000000000000.0);
+        } else {
+            return df.format(cookies / 1000000000000000000.0);
+        }
     }
 
     public String getCookiesSuffix() {

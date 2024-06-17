@@ -49,45 +49,4 @@ public class CookieClicker {
         return upgrades;
     }
 
-    /** Los métodos de aquí para abajo serán removidos en favor de la GUI. Es sólo para testear. */
-    private static void printStats() {
-        System.out.println("Tienes " + cookieManager.getCookies() + " galletas.\nProduces " + cookieManager.getCookiesPerSecond() + " galleta(s)/s.");
-        for (Upgrade upgrade : upgrades) {
-            if (upgrade.getQuantity() > 0) {
-                System.out.println(upgrade.getName() + ": " + upgrade.getQuantity());
-            }
-        }
-    }
-
-    private static void showUpgrades() {
-        System.out.println("--------- Mejoras ---------");
-        for (int i = 0; i < upgrades.size(); i++) {
-            Upgrade upgrade = upgrades.get(i);
-            System.out.println(i + ") " + upgrade.getName() + " - Costo: " + upgrade.getCurrentCost() + " - Galletas/s: " + upgrade.getCookiesPerSecond());
-        }
-    }
-
-    private static void buyUpgrades() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("¿Qué mejora quieres comprar?");
-        showUpgrades();
-        System.out.println("Escoge una mejora: ");
-        int upgradeIndex = scanner.nextInt();
-
-        Upgrade upgrade = upgrades.get(upgradeIndex);
-        cookieManager.buyUpgrade(upgrade);
-    }
-
-    // TODO para este metodo: chequear que de verdad tenga la mejora antes de venderla.
-    private static void sellUpgrades() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("¿Qué mejora quieres vender?");
-        showUpgrades();
-        System.out.println("Escoge una mejora: ");
-        int upgradeIndex = scanner.nextInt();
-
-        Upgrade upgrade = upgrades.get(upgradeIndex);
-        cookieManager.sellUpgrade(upgrade);
-    }
-
 }

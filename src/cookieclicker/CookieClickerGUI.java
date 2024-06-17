@@ -36,18 +36,17 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         cookieButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                CookieClicker.getCookieManager().clickCookie();
+                int cookiesPerClick = CookieClicker.getCookieManager().clickCookie();
                 cookieCount.setText(CookieClicker.getCookieManager().getCookiesPrefix() + "");
                 cookieCountText.setText(CookieClicker.getCookieManager().getCookiesSuffix());
 
-                JLabel clickLabel = new JLabel("+1");
-                clickLabel.setFont(new Font("Arial", Font.BOLD, 24));
-                clickLabel.setBackground(Color.WHITE);
+                JLabel clickLabel = new JLabel("+" + cookiesPerClick);
+                clickLabel.setFont(new Font("Arial", Font.BOLD, 34));
+                clickLabel.setForeground(Color.WHITE);
                 Point clickLocation = SwingUtilities.convertPoint(cookieButton, e.getPoint(), bg);
-                clickLabel.setBounds(clickLocation.x, clickLocation.y, 50, 30);
+                clickLabel.setBounds(clickLocation.x, clickLocation.y, 100, 30);
                 clickLabel.setFocusable(false);
                 clickLabel.setEnabled(false);
-                clickLabel.setIgnoreRepaint(true);
 
                 if (clickLabels.size() >= 5) {
                     JLabel oldestLabel = clickLabels.remove(0);
@@ -59,7 +58,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                 bg.revalidate();
                 bg.repaint();
 
-                new Timer(50, new ActionListener() {
+                Timer fadeTimer = new Timer(50, new ActionListener() {
                     int opacity = 255;
 
                     @Override
@@ -75,7 +74,8 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                             bg.repaint();
                         }
                     }
-                }).start();
+                });
+                fadeTimer.start();
             }
 
             @Override
@@ -91,6 +91,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
             }
         });
     }
+
 
     private void refreshCookieCount() {
         Timer SimpleTimer = new Timer(1000, new ActionListener(){
@@ -175,6 +176,8 @@ public class CookieClickerGUI extends javax.swing.JFrame {
 
     /**
      * Poblar las mejoras en el panel de mejoras.
+     * Se añade un MouseListener para comprar la mejora al hacer clic en ella.
+     * Se añade un MouseListener para vender la mejora al hacer clic derecho en ella.
      */
     public void populateUpgrades() {
         JPanel upgradesPanel = new JPanel();
@@ -223,16 +226,28 @@ public class CookieClickerGUI extends javax.swing.JFrame {
             upgradePanel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    boolean bought = CookieClicker.getCookieManager().buyUpgrade(upgrade);
-                    textPanel.setBackground(bought ? new Color(184,216,190) : new Color(176,176,176));
-                    
-                    if (bought) {
-                        cookieCount.setText(CookieClicker.getCookieManager().getCookiesPrefix() + "");
-                        cookieCountText.setText(CookieClicker.getCookieManager().getCookiesSuffix());
-                        upgradeCount.setText(upgrade.getQuantity() + "");
-                        upgradeCost.setText(upgrade.getCurrentCost() + "");
-                        perSecondText.setText(CookieClicker.getCookieManager().getCookiesPerSecond() + "");
+                    if (e.getButton() == MouseEvent.BUTTON1 && CookieClicker.getCookieManager().getCookies() >= upgrade.getCurrentCost()) {
+                        boolean bought = CookieClicker.getCookieManager().buyUpgrade(upgrade);
+                        textPanel.setBackground(new Color(176,176,176));
+
+                        if (bought) {
+                            cookieCount.setText(CookieClicker.getCookieManager().getCookiesPrefix() + "");
+                            cookieCountText.setText(CookieClicker.getCookieManager().getCookiesSuffix());
+                            upgradeCount.setText(upgrade.getQuantity() + "");
+                            upgradeCost.setText(upgrade.getCurrentCost() + "");
+                            perSecondText.setText(CookieClicker.getCookieManager().getCookiesPerSecond() + "");
+                        }
+                    } else if (e.getButton() == MouseEvent.BUTTON3) {
+                        boolean sold = CookieClicker.getCookieManager().sellUpgrade(upgrade);
+
+                        if (sold) {
+                            upgradeCount.setText(upgrade.getQuantity() + "");
+                            cookieCount.setText(CookieClicker.getCookieManager().getCookiesPrefix() + "");
+                            cookieCountText.setText(CookieClicker.getCookieManager().getCookiesSuffix());
+                            perSecondText.setText(CookieClicker.getCookieManager().getCookiesPerSecond() + "");
+                        }
                     }
+
                 }
             });
 
@@ -302,9 +317,10 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         cookieCountText = new javax.swing.JLabel();
         cookieCount = new javax.swing.JLabel();
-        upgradesScrollPane = new javax.swing.JScrollPane();
         perSecondText = new javax.swing.JLabel();
         perSecondLabel = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        upgradesScrollPane = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1200, 700));
@@ -316,8 +332,9 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         bg.add(cookieButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 260, 340, 340));
 
         cookieLabel.setFont(new java.awt.Font("Samurai Blast", 0, 48)); // NOI18N
+        cookieLabel.setForeground(new java.awt.Color(255, 255, 255));
         cookieLabel.setText("GALLETAS");
-        bg.add(cookieLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 10, 250, 100));
+        bg.add(cookieLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, 250, 100));
 
         jSeparator1.setBackground(new java.awt.Color(0, 0, 0));
         jSeparator1.setForeground(new java.awt.Color(0, 0, 0));
@@ -325,23 +342,32 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         bg.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 340, 20));
 
         cookieCountText.setFont(new java.awt.Font("Dubai", 1, 28)); // NOI18N
+        cookieCountText.setForeground(java.awt.Color.white);
         cookieCountText.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        bg.add(cookieCountText, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 130, 210, 40));
+        bg.add(cookieCountText, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 130, 210, 40));
 
         cookieCount.setFont(new java.awt.Font("Dubai", 1, 48)); // NOI18N
+        cookieCount.setForeground(new java.awt.Color(255, 255, 255));
         cookieCount.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         cookieCount.setText("0");
-        bg.add(cookieCount, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 90, 210, 40));
+        bg.add(cookieCount, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 90, 210, 40));
+
+        perSecondText.setFont(new java.awt.Font("Verdana", 0, 10)); // NOI18N
+        perSecondText.setForeground(java.awt.Color.white);
+        perSecondText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        perSecondText.setText("0");
+        bg.add(perSecondText, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 190, 170, 20));
+
+        perSecondLabel.setFont(new java.awt.Font("OCR A Extended", 0, 12)); // NOI18N
+        perSecondLabel.setForeground(java.awt.Color.white);
+        perSecondLabel.setText("Por segundo:");
+        bg.add(perSecondLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 190, 110, 20));
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cookieclicker/images/CookieClicker.jpg"))); // NOI18N
+        bg.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 410, 700));
 
         upgradesScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         bg.add(upgradesScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, -10, 770, 710));
-
-        perSecondText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        perSecondText.setText("0");
-        bg.add(perSecondText, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 180, 170, 20));
-
-        perSecondLabel.setText("Por segundo:");
-        bg.add(perSecondLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 180, 80, 20));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -402,6 +428,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
     private javax.swing.JLabel cookieCount;
     private javax.swing.JLabel cookieCountText;
     private javax.swing.JLabel cookieLabel;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel perSecondLabel;
     private javax.swing.JLabel perSecondText;
