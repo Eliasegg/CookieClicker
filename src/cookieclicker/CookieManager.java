@@ -15,15 +15,14 @@ public class CookieManager {
         cookies += 1;
     }
 
-    public void buyUpgrade(Upgrade upgrade) {
+    public boolean buyUpgrade(Upgrade upgrade) {
         if (this.cookies >= upgrade.getCurrentCost()) {
             this.cookies -= upgrade.getCurrentCost();
             upgrade.purchase();
             cookiesPerSecond += upgrade.getCookiesPerSecond();
-            System.out.println("Compraste: " + upgrade.getName() + "!");
-        } else {
-            System.out.println("No tienes suficientes galletas para comprar: " + upgrade.getName());
+            return true;
         }
+        return false;
     }
 
     public void sellUpgrade(Upgrade upgrade) {

@@ -23,6 +23,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         setScrollSpeed(20, 100);
         customizeScrollBar();
         refreshCookieCount();
+        updateUpgradesAvailability();
     }
 
     private void setupCookie() {
@@ -91,6 +92,46 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         SimpleTimer.start();
     }
 
+    private void updateUpgradesAvailability() {
+        Timer SimpleTimer = new Timer(100, new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (upgradesScrollPane.getViewport().getView() instanceof Container) {
+                    for (Component component : ((Container) upgradesScrollPane.getViewport().getView()).getComponents()) {
+                        if (component instanceof JPanel) {
+                            JPanel upgradePanel = (JPanel) component;
+                            JPanel textPanel = (JPanel) upgradePanel.getComponent(1);
+
+                            Upgrade upgrade = (Upgrade) textPanel.getClientProperty("upgrade");
+
+                            // Si no se encontró la mejora, continuar con el siguiente loop. Fail-safe.
+                            if (upgrade == null) {
+                                continue;
+                            }
+
+                            if (CookieClicker.getCookieManager().getCookies() >= upgrade.getCurrentCost()) {
+                                upgradePanel.setBackground(new Color(184,216,190));
+                                upgradePanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                                
+                                textPanel.setBackground(new Color(184,216,190));
+                                textPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                            } else {
+                                upgradePanel.setBackground(new Color(176,176,176));
+                                upgradePanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                                
+                                textPanel.setBackground(new Color(176,176,176));
+                                textPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                            }
+                        }
+
+
+                    }
+                }
+            }
+        });
+        SimpleTimer.start();
+    }
+
     /**
      * Método para redimensionar y establecer una imagen en un JLabel cuando el componente se redimensiona.
      * @param label - JLabel donde se mostrará la imagen.
@@ -131,7 +172,8 @@ public class CookieClickerGUI extends javax.swing.JFrame {
             JPanel upgradePanel = new JPanel();
             upgradePanel.setLayout(new BorderLayout(10, 10));
             upgradePanel.setMaximumSize(new Dimension(760, 80));
-            upgradePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            upgradePanel.setBackground(new Color(176,176,176));
+            upgradePanel.setBorder(BorderFactory.createLineBorder(Color.black));
 
             JLabel upgradeImage = new JLabel();
             upgradeImage.setPreferredSize(new Dimension(80, 80));
@@ -141,15 +183,17 @@ public class CookieClickerGUI extends javax.swing.JFrame {
             JPanel textPanel = new JPanel();
             textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
             textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
+            textPanel.setBackground(new Color(176,176,176));
             JLabel upgradeName = new JLabel(upgrade.getName());
             upgradeName.setFont(new Font("Arial", Font.BOLD, 18));
             textPanel.add(Box.createVerticalStrut(10)); // Espacio antes del texto
             textPanel.add(upgradeName);
+            textPanel.putClientProperty("upgrade", upgrade);
+            textPanel.setName("upgradePane" + i);
 
             JLabel upgradeCost = new JLabel(upgrade.getCurrentCost() + "");
             upgradeCost.setFont(new Font("Arial", Font.PLAIN, 14));
-            upgradeCost.setForeground(new Color(0, 128, 0)); // Green color
+            upgradeCost.setForeground(new Color(0, 128, 0));
             textPanel.add(upgradeCost);
 
             upgradePanel.add(textPanel, BorderLayout.CENTER);
@@ -166,6 +210,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                 public void mousePressed(MouseEvent e) {
                     boolean bought = CookieClicker.getCookieManager().buyUpgrade(upgrade);
                     if (bought) {
+                        cookieCount.setText(CookieClicker.getCookieManager().getCookies() + "");
                         upgradeCount.setText(upgrade.getQuantity() + "");
                         upgradeCost.setText(upgrade.getCurrentCost() + "");
                         perSecondText.setText(CookieClicker.getCookieManager().getCookiesPerSecond() + "");
