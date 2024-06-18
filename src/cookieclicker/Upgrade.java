@@ -24,12 +24,20 @@ public class Upgrade {
         return quantity;
     }
 
+    public int getCurrentCost() {
+        return baseCost;
+    }
+
     public int getCookiesPerSecond() {
         return cookiesPerSecond;
     }
 
-    public int getCurrentCost() {
-        return (int) (baseCost * Math.pow(1.15, quantity));
+    public int getCurrentCost(int quantity) {
+        if (quantity == 0) {
+            return baseCost;
+        } else {
+            return (int) (baseCost * Math.pow(1.15, quantity - 1)) + getCurrentCost(quantity - 1);
+        }
     }
 
     public void purchase() {

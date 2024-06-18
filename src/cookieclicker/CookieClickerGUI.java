@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
 /**
@@ -63,7 +64,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
 
                     @Override
                     public void actionPerformed(ActionEvent evt) {
-                        opacity -= 5;
+                        opacity = Math.max(0, opacity - 25); // Decrementar la opacidad en 25. No bajar de 0.
                         clickLabel.setForeground(new Color(255, 255, 255, opacity));
 
                         if (opacity <= 0) {
@@ -76,6 +77,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                     }
                 });
                 fadeTimer.start();
+
             }
 
             @Override
@@ -117,6 +119,8 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                         if (component instanceof JPanel) {
                             JPanel upgradePanel = (JPanel) component;
                             JPanel textPanel = (JPanel) upgradePanel.getComponent(1);
+                            JLabel upgradeCount = (JLabel) upgradePanel.getComponent(2);
+                            JLabel upgradeCost = (JLabel) textPanel.getComponent(2);
 
                             Upgrade upgrade = (Upgrade) textPanel.getClientProperty("upgrade");
 
@@ -125,7 +129,10 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                                 continue;
                             }
 
-                            if (CookieClicker.getCookieManager().getCookies() >= upgrade.getCurrentCost()) {
+                            upgradeCount.setText(upgrade.getQuantity() + "");
+                            upgradeCost.setText(upgrade.getCurrentCost(upgrade.getQuantity()) + "");
+                            
+                            if (CookieClicker.getCookieManager().getCookies() >= upgrade.getCurrentCost(upgrade.getQuantity())) {
                                 upgradePanel.setBackground(new Color(184,216,190));
                                 upgradePanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -151,7 +158,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
     /**
      * Método para redimensionar y establecer una imagen en un JLabel cuando el componente se redimensiona.
      * @param label - JLabel donde se mostrará la imagen.
-     * @param imagePath - Ruta de la imagen.
+     * @param imageName - Ruta de la imagen.
      */
     private void resizeOnComponentAppear(JLabel label, String imageName) {
         label.addComponentListener(new ComponentAdapter() {
@@ -209,7 +216,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
             textPanel.putClientProperty("upgrade", upgrade);
             textPanel.setName("upgradePane" + i);
 
-            JLabel upgradeCost = new JLabel(upgrade.getCurrentCost() + "");
+            JLabel upgradeCost = new JLabel(upgrade.getCurrentCost(upgrade.getQuantity()) + "");
             upgradeCost.setFont(new Font("Arial", Font.PLAIN, 14));
             upgradeCost.setForeground(new Color(0, 128, 0));
             textPanel.add(upgradeCost);
@@ -234,7 +241,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                             cookieCount.setText(CookieClicker.getCookieManager().getCookiesPrefix() + "");
                             cookieCountText.setText(CookieClicker.getCookieManager().getCookiesSuffix());
                             upgradeCount.setText(upgrade.getQuantity() + "");
-                            upgradeCost.setText(upgrade.getCurrentCost() + "");
+                            upgradeCost.setText(upgrade.getCurrentCost(upgrade.getQuantity()) + "");
                             perSecondText.setText(CookieClicker.getCookieManager().getCookiesPerSecond() + "");
                         }
                     } else if (e.getButton() == MouseEvent.BUTTON3) {
@@ -312,6 +319,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
     private void initComponents() {
 
         bg = new javax.swing.JPanel();
+        nombreUsuario = new javax.swing.JLabel();
         cookieButton = new javax.swing.JLabel();
         cookieLabel = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
@@ -321,6 +329,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         perSecondLabel = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         upgradesScrollPane = new javax.swing.JScrollPane();
+        cookieLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1200, 700));
@@ -329,6 +338,11 @@ public class CookieClickerGUI extends javax.swing.JFrame {
 
         bg.setBackground(new java.awt.Color(255, 255, 255));
         bg.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        nombreUsuario.setFont(new java.awt.Font("Samurai Blast", 1, 24)); // NOI18N
+        nombreUsuario.setForeground(java.awt.Color.white);
+        nombreUsuario.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        bg.add(nombreUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 630, 410, 30));
         bg.add(cookieButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 260, 340, 340));
 
         cookieLabel.setFont(new java.awt.Font("Samurai Blast", 0, 48)); // NOI18N
@@ -369,6 +383,11 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         upgradesScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         bg.add(upgradesScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, -10, 770, 710));
 
+        cookieLabel1.setFont(new java.awt.Font("Samurai Blast", 0, 48)); // NOI18N
+        cookieLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        cookieLabel1.setText("GALLETAS");
+        bg.add(cookieLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, 250, 100));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -391,6 +410,8 @@ public class CookieClickerGUI extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        Scanner scanner = new Scanner(System.in);
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -417,7 +438,65 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CookieClickerGUI().setVisible(true);
+                System.out.println("Iniciando Cookie Clicker...");
+                CookieClickerGUI gui = new CookieClickerGUI();
+                gui.setVisible(true);
+
+                String instructions = "<html><body style='width: 300px; padding: 20px'>"
+                        + "<h2>Bienvenido a Cookie Clicker!</h2>"
+                        + "<p>Este es un juego en el que tu objetivo es obtener la mayor cantidad de galletas posible. Aquí te explicamos cómo jugar:</p>"
+                        + "<ul style='padding-left: 10px;'>"
+                        + "<li style='margin-bottom: 10px;'>Comienzas el juego con 0 galletas y generas 1 galleta por segundo automáticamente.</li>"
+                        + "<li style='margin-bottom: 10px;'>Puedes hacer click en la galleta en la pantalla para obtener galletas adicionales. La cantidad de galletas que obtienes por click depende de cuántas mejoras de 'Click' hayas comprado.</li>"
+                        + "<li style='margin-bottom: 10px;'>Puedes comprar mejoras para aumentar la cantidad de galletas que generas por segundo. Cada mejora tiene un costo que aumenta cada vez que compras una.</li>"
+                        + "<li style='margin-bottom: 10px;'>También puedes vender mejoras al hacer click derecho en una mejora que tengas. Cuando vendes una mejora, obtienes galletas y reduces la cantidad de galletas que generas por segundo.</li>"
+                        + "<li style='margin-bottom: 10px;'>En la consola, puedes añadir galletas y obtener mejoras de forma gratuita para probar el juego. Simplemente sigue las instrucciones en la consola.</li>"
+                        + "</ul>"
+                        + "<p>¡Disfruta el juego y trata de obtener la mayor cantidad de galletas posible!</p>"
+                        + "</body></html>";
+                JOptionPane.showMessageDialog(gui, instructions, "Instrucciones del juego", JOptionPane.INFORMATION_MESSAGE);
+
+                new Thread(new Runnable() {
+                    public void run() {
+                        Scanner scanner = new Scanner(System.in);
+                        while (true) {
+                            System.out.println("-------------------- Cookie Clicker --------------------");
+                            System.out.println("1. Anadir galletas");
+                            System.out.println("2. Obtener edificio");
+                            System.out.print("Escoge una opcion: ");
+                            int choice = scanner.nextInt();
+
+                            switch (choice) {
+                                case 1:
+                                    System.out.print("Cantidad de galletas: ");
+                                    int cookies = scanner.nextInt();
+                                    CookieClicker.getCookieManager().addCookies(cookies);
+                                    System.out.printf("Se anadieron %d galletas.\n", cookies);
+                                    break;
+                                case 2:
+                                    System.out.println("Lista de edificios:");
+                                    ArrayList<Upgrade> upgrades = CookieClicker.getUpgrades();
+                                    for (int i = 0; i < upgrades.size(); i++) {
+                                        System.out.printf("%d) %s\n", i + 1, upgrades.get(i).getName());
+                                    }
+                                    System.out.print("Edificio a obtener: ");
+                                    int buildingIndex = scanner.nextInt() - 1;
+
+                                    System.out.print("Cantidad: ");
+                                    int quantity = scanner.nextInt();
+                                    for (int i = 0; i < quantity; i++) {
+                                        CookieClicker.getCookieManager().getUpgrade(upgrades.get(buildingIndex));
+                                    }
+                                    System.out.printf("Se obtuvieron %d edificios %s.\n", quantity, upgrades.get(buildingIndex).getName());
+                                    break;
+                                default:
+                                    System.out.println("Opción no valida.");
+                            }
+                        }
+
+                    }
+                }).start();
+                
             }
         });
     }
@@ -428,8 +507,10 @@ public class CookieClickerGUI extends javax.swing.JFrame {
     private javax.swing.JLabel cookieCount;
     private javax.swing.JLabel cookieCountText;
     private javax.swing.JLabel cookieLabel;
+    private javax.swing.JLabel cookieLabel1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel nombreUsuario;
     private javax.swing.JLabel perSecondLabel;
     private javax.swing.JLabel perSecondText;
     private javax.swing.JScrollPane upgradesScrollPane;

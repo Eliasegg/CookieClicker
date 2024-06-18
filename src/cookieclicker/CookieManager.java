@@ -1,9 +1,11 @@
 package cookieclicker;
 
 import java.text.DecimalFormat;
+import java.util.Random;
 
 public class CookieManager {
 
+    private String name;
     private long cookies;
     private long cookiesPerSecond;
 
@@ -13,15 +15,16 @@ public class CookieManager {
     }
 
     public int clickCookie() {
+        Random random = new Random();
         Upgrade clickUpgrade = CookieClicker.getUpgrades().get(0);
-        int value = 1 + (clickUpgrade.getQuantity() * ((int)cookiesPerSecond / 10));
+        int value = 1 + random.nextInt(0, (clickUpgrade.getQuantity() * (int) cookiesPerSecond) + 1);
         cookies += value;
         return value;
     }
 
     public boolean buyUpgrade(Upgrade upgrade) {
-        if (this.cookies >= upgrade.getCurrentCost()) {
-            this.cookies -= upgrade.getCurrentCost();
+        if (this.cookies >= upgrade.getCurrentCost(upgrade.getQuantity())) {
+            this.cookies -= upgrade.getCurrentCost(upgrade.getQuantity());
             upgrade.purchase();
             cookiesPerSecond += upgrade.getCookiesPerSecond();
             return true;
@@ -33,13 +36,22 @@ public class CookieManager {
         if (upgrade.getQuantity() > 0) {
             this.cookies += upgrade.getCurrentCost() / 2;
             upgrade.sell();
-            cookiesPerSecond -= upgrade.getCookiesPerSecond();
+            cookiesPerSecond += upgrade.getCookiesPerSecond();
             return true;
         }
         return false;
     }
 
+    public void getUpgrade(Upgrade upgrade) {
+        upgrade.purchase();
+        cookiesPerSecond += upgrade.getCookiesPerSecond();
+    }
+
     public void addCookies(int cookies) {
+        this.cookies += cookies;
+    }
+
+    public void addCookies(long cookies) {
         this.cookies += cookies;
     }
 
@@ -86,6 +98,14 @@ public class CookieManager {
 
     public void setCookies(int cookies) {
         this.cookies = cookies;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public long getCookiesPerSecond() {
