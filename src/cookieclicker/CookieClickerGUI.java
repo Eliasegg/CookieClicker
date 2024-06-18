@@ -17,7 +17,9 @@ public class CookieClickerGUI extends javax.swing.JFrame {
     private List<JLabel> clickLabels = new ArrayList<>();
 
     /**
-     * Creates new form CookieClickerGUI
+     * Inicializa la interfaz gráfica de Cookie Clicker.
+     * Se inicia el juego y se configuran los componentes de la interfaz.
+     *
      */
     public CookieClickerGUI() {
         CookieClicker.startGame();
@@ -30,6 +32,66 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         updateUpgradesAvailability();
     }
 
+    /**
+     * Método para mostrar el menú de administrador en la consola.
+     * Se pueden añadir galletas y obtener edificios de forma gratuita.
+     * Corre en un hilo separado para no bloquear la interfaz gráfica.
+     *
+     * Útiliza los 3 tipos de print de System.out: print, printf y println como solicitado en el documento.
+     */
+    private static void menuAdministrador() {
+        new Thread(new Runnable() {
+            public void run() {
+                Scanner scanner = new Scanner(System.in);
+                while (true) {
+                    System.out.println("-------------------- Cookie Clicker --------------------");
+                    System.out.println("1. Anadir galletas");
+                    System.out.println("2. Obtener edificio");
+                    System.out.print("Escoge una opcion: ");
+                    int choice = scanner.nextInt();
+
+                    switch (choice) {
+                        case 1:
+                            System.out.print("Cantidad de galletas: ");
+                            int cookies = scanner.nextInt();
+                            CookieClicker.getCookieManager().addCookies(cookies);
+                            System.out.printf("Se anadieron %d galletas.\n", cookies);
+                            break;
+                        case 2:
+                            System.out.println("Lista de edificios:");
+                            ArrayList<Upgrade> upgrades = CookieClicker.getUpgrades();
+                            for (int i = 0; i < upgrades.size(); i++) {
+                                System.out.printf("%d) %s\n", i + 1, upgrades.get(i).getName());
+                            }
+                            System.out.print("Edificio a obtener: ");
+                            int buildingIndex = scanner.nextInt() - 1;
+
+                            System.out.print("Cantidad: ");
+                            int quantity = scanner.nextInt();
+                            for (int i = 0; i < quantity; i++) {
+                                CookieClicker.getCookieManager().getUpgrade(upgrades.get(buildingIndex));
+                            }
+                            System.out.printf("Se obtuvieron %d edificios %s.\n", quantity, upgrades.get(buildingIndex).getName());
+                            break;
+                        default:
+                            System.out.println("Opción no valida.");
+                    }
+                }
+
+            }
+        }).start();
+    }
+
+    /**
+     * Configura el botón de galleta.
+     *
+     * La galleta se puede clickear para obtener galletas adicionales.
+     * La cantidad de galletas que se obtienen por click depende de cuántas mejoras de 'Click' hayas comprado.
+     * Se muestra un label con la cantidad de galletas obtenidas por click (que es aleatoria).
+     * Se muestra un máximo de 5 labels con la cantidad de galletas obtenidas por click y después desaparecen.
+     *
+     * Se actualiza la cantidad de galletas en la interfaz.
+     */
     private void setupCookie() {
         bg.setLayout(null);
         resizeAndSetImage(cookieButton, "src/cookieclicker/images/PerfectCookie.png", 330, 330);
@@ -95,8 +157,13 @@ public class CookieClickerGUI extends javax.swing.JFrame {
     }
 
 
+    /**
+     * Actualiza la cantidad de galletas en la interfaz.
+     *
+     * Se actualiza la cantidad de galletas en la interfaz cada segundo.
+     */
     private void refreshCookieCount() {
-        Timer SimpleTimer = new Timer(1000, new ActionListener(){
+        Timer cookieTimer = new Timer(1000, new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 int cookiesPerSecond = (int) CookieClicker.getCookieManager().getCookiesPerSecond();
@@ -107,11 +174,20 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                 perSecondText.setText(CookieClicker.getCookieManager().getCookiesPerSecond() + "");
             }
         });
-        SimpleTimer.start();
+        cookieTimer.start();
     }
 
+    /**
+     * Actualiza la disponibilidad de las mejoras en la interfaz.
+     *
+     * Busca las mejoras que están dentro del JScrollPane y actualiza su disponibilidad.
+     * Si el jugador tiene suficientes galletas para comprar la mejora, se muestra en verde y se puede clickear.
+     * Sino, se muestra en gris y no se puede clickear.
+     *
+     * Se actualiza cada milisegundo.
+     */
     private void updateUpgradesAvailability() {
-        Timer SimpleTimer = new Timer(1, new ActionListener(){
+        Timer upgradeTimer = new Timer(1, new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (upgradesScrollPane.getViewport().getView() instanceof Container) {
@@ -122,6 +198,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                             JLabel upgradeCount = (JLabel) upgradePanel.getComponent(2);
                             JLabel upgradeCost = (JLabel) textPanel.getComponent(2);
 
+                            // Esto lo seteamos en la función populateUpgrades.
                             Upgrade upgrade = (Upgrade) textPanel.getClientProperty("upgrade");
 
                             // Si no se encontró la mejora, continuar con el siguiente loop. Fail-safe.
@@ -152,37 +229,13 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                 }
             }
         });
-        SimpleTimer.start();
+        upgradeTimer.start();
     }
 
-    /**
-     * Método para redimensionar y establecer una imagen en un JLabel cuando el componente se redimensiona.
-     * @param label - JLabel donde se mostrará la imagen.
-     * @param imageName - Ruta de la imagen.
-     */
-    private void resizeOnComponentAppear(JLabel label, String imageName) {
-        label.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                resizeAndSetImage(label, "src/cookieclicker/images/" + imageName, 80, 80);
-            }
-        });
-    }
-
-    /**
-     * Método para redimensionar y establecer una imagen en un JLabel.
-     * @param label - JLabel donde se mostrará la imagen.
-     * @param imagePath - Ruta de la imagen.
-     */
-    private void resizeAndSetImage(JLabel label, String imagePath, int width, int height) {
-        ImageIcon icon = new ImageIcon(imagePath);
-        Image image = icon.getImage();
-        Image resizedImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-        label.setIcon(new ImageIcon(resizedImage));
-    }
 
     /**
      * Poblar las mejoras en el panel de mejoras.
+     *
      * Se añade un MouseListener para comprar la mejora al hacer clic en ella.
      * Se añade un MouseListener para vender la mejora al hacer clic derecho en ella.
      */
@@ -203,7 +256,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
             JLabel upgradeImage = new JLabel();
             upgradeImage.setPreferredSize(new Dimension(80, 80));
             upgradePanel.add(upgradeImage, BorderLayout.WEST);
-            resizeOnComponentAppear(upgradeImage, upgrade.getImageName());
+            resizeUpgrade(upgradeImage, upgrade.getImageName());
 
             JPanel textPanel = new JPanel();
             textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
@@ -213,7 +266,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
             upgradeName.setFont(new Font("Arial", Font.BOLD, 18));
             textPanel.add(Box.createVerticalStrut(10)); // Espacio antes del texto
             textPanel.add(upgradeName);
-            textPanel.putClientProperty("upgrade", upgrade);
+            textPanel.putClientProperty("upgrade", upgrade); // Importante: Guardar el objeto Upgrade en el textPanel. Asi es como lo retornamos.
             textPanel.setName("upgradePane" + i);
 
             JLabel upgradeCost = new JLabel(upgrade.getCurrentCost(upgrade.getQuantity()) + "");
@@ -233,10 +286,12 @@ public class CookieClickerGUI extends javax.swing.JFrame {
             upgradePanel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
+                    // Botón izquierdo, comprar la mejora si tiene suficientes galletas.
                     if (e.getButton() == MouseEvent.BUTTON1 && CookieClicker.getCookieManager().getCookies() >= upgrade.getCurrentCost()) {
                         boolean bought = CookieClicker.getCookieManager().buyUpgrade(upgrade);
                         textPanel.setBackground(new Color(176,176,176));
 
+                        // Si se compró la mejora, actualizar la interfaz.
                         if (bought) {
                             cookieCount.setText(CookieClicker.getCookieManager().getCookiesPrefix() + "");
                             cookieCountText.setText(CookieClicker.getCookieManager().getCookiesSuffix());
@@ -244,9 +299,10 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                             upgradeCost.setText(upgrade.getCurrentCost(upgrade.getQuantity()) + "");
                             perSecondText.setText(CookieClicker.getCookieManager().getCookiesPerSecond() + "");
                         }
-                    } else if (e.getButton() == MouseEvent.BUTTON3) {
+                    } else if (e.getButton() == MouseEvent.BUTTON3) { // Botón derecho, vender la mejora.
                         boolean sold = CookieClicker.getCookieManager().sellUpgrade(upgrade);
 
+                        // Si se vendió la mejora, actualizar la interfaz.
                         if (sold) {
                             upgradeCount.setText(upgrade.getQuantity() + "");
                             cookieCount.setText(CookieClicker.getCookieManager().getCookiesPrefix() + "");
@@ -257,22 +313,41 @@ public class CookieClickerGUI extends javax.swing.JFrame {
 
                 }
             });
-
+            // Añadir el panel de la mejora al panel de mejoras
             upgradesPanel.add(upgradePanel);
         }
 
+        // Añadir el panel de mejoras al JScrollPane para que sea scrollable
         upgradesScrollPane.setViewportView(upgradesPanel);
     }
 
     /**
-     * Ajusta la velocidad de scroll del JScrollPane.
-     * @param unitIncrement - Velocidad de scroll al hacer clic en las flechas de scroll.
-     * @param blockIncrement - Velocidad de scroll al hacer clic en el track del scrollbar.
+     * Redimensiona una imagen en un JLabel cuando el componente aparece.
+     *
+     * Útil para redimensionar las imágenes de las mejoras en el panel de mejoras.
+     * @param label - JLabel donde se mostrará la imagen.
+     * @param imageName - Nombre de la imagen. Basado en el paquete de images.
      */
-    private void setScrollSpeed(int unitIncrement, int blockIncrement) {
-        JScrollBar verticalScrollBar = upgradesScrollPane.getVerticalScrollBar();
-        verticalScrollBar.setUnitIncrement(unitIncrement);
-        verticalScrollBar.setBlockIncrement(blockIncrement);
+    private void resizeUpgrade(JLabel label, String imageName) {
+        // Redimensionar la imagen cuando el componente aparece
+        label.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) { // Se ejecuta cuando el componente aparece.
+                resizeAndSetImage(label, "src/cookieclicker/images/" + imageName, 80, 80);
+            }
+        });
+    }
+
+    /**
+     * Método para redimensionar y establecer una imagen en un JLabel.
+     * @param label - JLabel donde se mostrará la imagen.
+     * @param imagePath - Ruta de la imagen.
+     */
+    private void resizeAndSetImage(JLabel label, String imagePath, int width, int height) {
+        ImageIcon icon = new ImageIcon(imagePath);
+        Image image = icon.getImage();
+        Image resizedImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        label.setIcon(new ImageIcon(resizedImage));
     }
 
     /**
@@ -307,6 +382,17 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         });
 
         verticalScrollBar.setPreferredSize(new Dimension(15, Integer.MAX_VALUE));
+    }
+
+    /**
+     * Ajusta la velocidad de scroll del JScrollPane.
+     * @param unitIncrement - Velocidad de scroll al hacer clic en las flechas de scroll.
+     * @param blockIncrement - Velocidad de scroll al hacer clic en el track del scrollbar.
+     */
+    private void setScrollSpeed(int unitIncrement, int blockIncrement) {
+        JScrollBar verticalScrollBar = upgradesScrollPane.getVerticalScrollBar();
+        verticalScrollBar.setUnitIncrement(unitIncrement);
+        verticalScrollBar.setBlockIncrement(blockIncrement);
     }
 
     /**
@@ -442,6 +528,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                 CookieClickerGUI gui = new CookieClickerGUI();
                 gui.setVisible(true);
 
+                // Mostrar las instrucciones del juego usando un JOptionPane.
                 String instructions = "<html><body style='width: 300px; padding: 20px'>"
                         + "<h2>Bienvenido a Cookie Clicker!</h2>"
                         + "<p>Este es un juego en el que tu objetivo es obtener la mayor cantidad de galletas posible. Aquí te explicamos cómo jugar:</p>"
@@ -455,48 +542,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
                         + "<p>¡Disfruta el juego y trata de obtener la mayor cantidad de galletas posible!</p>"
                         + "</body></html>";
                 JOptionPane.showMessageDialog(gui, instructions, "Instrucciones del juego", JOptionPane.INFORMATION_MESSAGE);
-
-                new Thread(new Runnable() {
-                    public void run() {
-                        Scanner scanner = new Scanner(System.in);
-                        while (true) {
-                            System.out.println("-------------------- Cookie Clicker --------------------");
-                            System.out.println("1. Anadir galletas");
-                            System.out.println("2. Obtener edificio");
-                            System.out.print("Escoge una opcion: ");
-                            int choice = scanner.nextInt();
-
-                            switch (choice) {
-                                case 1:
-                                    System.out.print("Cantidad de galletas: ");
-                                    int cookies = scanner.nextInt();
-                                    CookieClicker.getCookieManager().addCookies(cookies);
-                                    System.out.printf("Se anadieron %d galletas.\n", cookies);
-                                    break;
-                                case 2:
-                                    System.out.println("Lista de edificios:");
-                                    ArrayList<Upgrade> upgrades = CookieClicker.getUpgrades();
-                                    for (int i = 0; i < upgrades.size(); i++) {
-                                        System.out.printf("%d) %s\n", i + 1, upgrades.get(i).getName());
-                                    }
-                                    System.out.print("Edificio a obtener: ");
-                                    int buildingIndex = scanner.nextInt() - 1;
-
-                                    System.out.print("Cantidad: ");
-                                    int quantity = scanner.nextInt();
-                                    for (int i = 0; i < quantity; i++) {
-                                        CookieClicker.getCookieManager().getUpgrade(upgrades.get(buildingIndex));
-                                    }
-                                    System.out.printf("Se obtuvieron %d edificios %s.\n", quantity, upgrades.get(buildingIndex).getName());
-                                    break;
-                                default:
-                                    System.out.println("Opción no valida.");
-                            }
-                        }
-
-                    }
-                }).start();
-                
+                menuAdministrador(); // Mostrar el menú de administrador en la consola.
             }
         });
     }

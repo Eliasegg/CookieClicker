@@ -1,9 +1,14 @@
 package cookieclicker;
 
-import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Scanner;
 
+/**
+ * Clase que inicia el juego y maneja las mejoras y el cookieManager.
+ *
+ * Esta clase es la que se encarga de iniciar el juego y de crear las mejoras que se pueden comprar.
+ * A su vez, también crea el cookieManager que se encarga de manejar las cookies del jugador.
+ * Tiene métodos estáticos para obtener el cookieManager y las mejoras.
+ */
 public class CookieClicker {
 
     private static CookieManager cookieManager;
