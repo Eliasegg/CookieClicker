@@ -6,11 +6,13 @@ public class Upgrade {
     private int baseCost;
     private int cookiesPerSecond;
     private int quantity;
+    private String imageName;
 
-    public Upgrade(String name, int baseCost, int cookiesPerSecond) {
+    public Upgrade(String name, int baseCost, int cookiesPerSecond, String imageName) {
         this.name = name;
         this.baseCost = baseCost;
         this.cookiesPerSecond = cookiesPerSecond;
+        this.imageName = imageName;
         this.quantity = 0;
     }
 
@@ -36,6 +38,10 @@ public class Upgrade {
 
     public void sell() {
         quantity--;
+    }
+
+    public String getImageName() {
+        return imageName;
     }
 
 }

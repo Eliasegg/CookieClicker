@@ -153,11 +153,11 @@ public class CookieClickerGUI extends javax.swing.JFrame {
      * @param label - JLabel donde se mostrará la imagen.
      * @param imagePath - Ruta de la imagen.
      */
-    private void resizeOnComponentAppear(JLabel label, String imagePath) {
+    private void resizeOnComponentAppear(JLabel label, String imageName) {
         label.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                resizeAndSetImage(label, "src/cookieclicker/images/CursorIconTransparent.png", 80, 80);
+                resizeAndSetImage(label, "src/cookieclicker/images/" + imageName, 80, 80);
             }
         });
     }
@@ -196,7 +196,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
             JLabel upgradeImage = new JLabel();
             upgradeImage.setPreferredSize(new Dimension(80, 80));
             upgradePanel.add(upgradeImage, BorderLayout.WEST);
-            resizeOnComponentAppear(upgradeImage, "src/cookieclicker/images/CursorIconTransparent.png");
+            resizeOnComponentAppear(upgradeImage, upgrade.getImageName());
 
             JPanel textPanel = new JPanel();
             textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
@@ -344,7 +344,7 @@ public class CookieClickerGUI extends javax.swing.JFrame {
         cookieCountText.setFont(new java.awt.Font("Dubai", 1, 28)); // NOI18N
         cookieCountText.setForeground(java.awt.Color.white);
         cookieCountText.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        bg.add(cookieCountText, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 130, 210, 40));
+        bg.add(cookieCountText, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 130, 210, 40));
 
         cookieCount.setFont(new java.awt.Font("Dubai", 1, 48)); // NOI18N
         cookieCount.setForeground(new java.awt.Color(255, 255, 255));
